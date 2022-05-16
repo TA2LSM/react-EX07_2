@@ -79,14 +79,7 @@ class TableHeader extends Component {
               onClick={() => this.checkColumnSortEvent(column)}
             >
               {column.label}
-              <i
-                className={
-                  this.checkColumnSortStyle(column)
-                  // column.sortable === "true" ? "fa fa-fw fa-sort" : ""
-                  //column.sortable === "true" ? "fa fa-fw fa-sort-up" : ""
-                }
-                // style={{ cursor: "pointer" }}
-              />
+              <i className={this.checkColumnSortStyle(column)} />
             </th>
           ))}
         </tr>

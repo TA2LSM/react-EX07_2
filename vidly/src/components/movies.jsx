@@ -87,23 +87,8 @@ class Movies extends Component {
     this.setState({ sortColumn });
   };
 
-  render() {
-    const { length: count } = this.state.movies;
-    //movies objesine ait lenght metodunun dönüşü count olarak alınıyor
-    if (count === 0) return <p>There no movies in the database!</p>;
-
-    const {
-      movies: allMovies,
-      genres: allGenres,
-      defaultPageSizes,
-      currentPage,
-      pageSize,
-      selectedGenre,
-      sortColumn,
-    } = this.state;
-
-    let tableHeight = pageSize * 50 + 45;
-    tableHeight = tableHeight.toString() + 'px';
+  getPageData = () => {
+    const { movies: allMovies, currentPage, pageSize, selectedGenre, sortColumn } = this.state;
 
     // aşağıdaki lojik sorgu ifadesinde " selectedGenre.name !== "All Genres" " yerine
     // "selectedGenre._id" de kullanılabilir.
@@ -111,8 +96,24 @@ class Movies extends Component {
       selectedGenre && selectedGenre.name !== 'All Genres'
         ? allMovies.filter(m => m.genre._id === selectedGenre._id)
         : allMovies;
+
     const sortedMovies = _.orderBy(filteredMovies, [sortColumn.path], [sortColumn.order]);
     const movies = paginate(sortedMovies, currentPage, pageSize);
+
+    return { totalCount: filteredMovies.length, data: movies };
+  };
+
+  render() {
+    const { length: count } = this.state.movies;
+    //movies objesine ait lenght metodunun dönüşü count olarak alınıyor
+    if (count === 0) return <p>There no movies in the database!</p>;
+
+    const { genres: allGenres, defaultPageSizes, currentPage, pageSize, selectedGenre, sortColumn } = this.state;
+
+    let tableHeight = pageSize * 50 + 45;
+    tableHeight = tableHeight.toString() + 'px';
+
+    const { totalCount, data: movies } = this.getPageData();
 
     return (
       <div>
@@ -153,7 +154,7 @@ class Movies extends Component {
             style={{ textAlign: 'end' }}
           >
             <p>
-              Showing <b>{filteredMovies.length}</b> movies in the database
+              Showing <b>{totalCount}</b> movies in the database
             </p>
           </div>
         </div>
@@ -197,7 +198,7 @@ class Movies extends Component {
                 // style={{ border: '1px solid red' }}
               >
                 <Pagination
-                  itemsCount={filteredMovies.length}
+                  itemsCount={totalCount}
                   pageSize={pageSize}
                   defaultPageSizes={defaultPageSizes}
                   currentPage={currentPage}
